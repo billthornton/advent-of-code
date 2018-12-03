@@ -13,7 +13,7 @@ claims.foreach { claim =>
   for {
     x <- claim.x until claim.x + claim.width
     y <- claim.y until claim.y + claim.height
-    key = s"${x}x${y}"
+    key = s"$x,$y"
   } observedCoords.update(key, observedCoords(key) + 1)
 }
 val squareInches = observedCoords.values.filter(_ > 1).size
@@ -23,7 +23,7 @@ val uniqClaimId = claims.find { claim =>
   val coordCounts = for {
     x <- claim.x until claim.x + claim.width
     y <- claim.y until claim.y + claim.height
-    key = s"${x}x${y}"
+    key = s"$x,$y"
   } yield observedCoords(key)
 
   coordCounts.toSet == Set(1)
