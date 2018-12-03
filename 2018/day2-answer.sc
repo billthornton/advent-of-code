@@ -3,15 +3,15 @@
 val input = scala.io.Source.fromFile("day2-input.txt").getLines.toSeq
 
 // Part 1
-def findRepetitions(repeatSize: Int)(line: String) = line
+def hasRepetitions(repeatCount: Int)(line: String): Boolean = line
   .split("")
   .groupBy(a => a)
-  .collectFirst { case (key, values) if values.size == repeatSize => 
+  .collectFirst { case (key, values) if values.size == repeatCount => 
     true
   }.isDefined
 
-val doubleCount = input.filter(findRepetitions(2)).size
-val tripleCount = input.filter(findRepetitions(3)).size
+val doubleCount = input.filter(hasRepetitions(2)).size
+val tripleCount = input.filter(hasRepetitions(3)).size
 val checksum = doubleCount * tripleCount
 
 // Part 2
