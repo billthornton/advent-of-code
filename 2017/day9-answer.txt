@@ -1,0 +1,16 @@
+
+
+
+val input = scala.io.Source.fromFile("day9.txt").getLines.toSeq.head
+val removeIgnored: String => String = "!.".r.replaceAllIn(_, "")
+val removeGarbage: String => String = "<.*>".r.replaceAllIn(_, "")
+
+val a = removeGarbage(removeIgnored(input)).replaceAll(",", "")
+a.foldLeft((0, 0)) { case ((depth, total), in) => { in match {
+    case '{' => (depth + 1, total + depth + 1)
+    case '}' => (depth - 1, total)
+  }
+  }
+  }
+
+  "<.*?>".r.findAllIn(removeIgnored(input)).toList.map(_.length - 2).sum

@@ -1,0 +1,17 @@
+val input = scala.io.Source.fromFile("input.txt").getLines.toSeq.map(_.trim.split("""\s+""").map(_.toInt).toSeq)
+
+val checksums = input.map { i =>
+  val min = i.reduceLeft(_ min _)
+  val max = i.reduceLeft(_ max _)
+  max - min
+}
+
+checksums.sum
+
+def findDiv(in: Seq[Int]) = { 
+  in.combinations(2).toSeq.collectFirst {
+    case a if a(0) % a(1) == 0 => a(0) / a(1)
+    case a if a(1) % a(0) == 0 => a(1) / a(0)
+  }
+}
+input.map(findDiv).toSeq.flatten.sum

@@ -1,0 +1,52 @@
+
+
+
+val input = scala.io.Source.fromFile("day7.txt").getLines.toSeq
+
+
+ val parsed = input.map(_.split("->").toSeq).map {
+    case Seq(left) => (left.split(" ").head, Nil)
+    case Seq(left, right) => (left.split(" ").head, right.trim.split(",").map(_.trim).toSeq)
+  }
+
+val lefts = parsed.collect { case (left, _) => left }.toSet
+val rights = parsed.collect { case (_, right) => right }.flatten.toSet
+lefts.diff(rights)
+
+
+val graph = parsed.foldLeft(Map.empty[String, Set[String]]) { case (map, (parent, children)) => {
+    val existing = map.getOrElse(parent, Set())
+    map + (parent -> (existing ++ children))
+  }
+  }
+
+val Parts = """(\w+) \((\d+)\).*""".r
+
+val weights = input.collect {
+      case Parts(name, weight) => (name -> weight.toInt)
+  }.toMap
+
+def getWeight(name: String): Int = {
+  val children = graph(name)
+  val childWeights = children.map(getWeight).sum
+  weights(name) + childWeights
+  }
+
+def getWeight2(name: String): Int = {
+      val children = graph(name)
+      val childValues = children.map(a => (a, weights(a), getWeight2(a)))
+      val childWeights = childValues.map(_._3)
+      val uniqueWeights = childWeights.toSet
+      if (uniqueWeights.size > 1) println(childValues)
+      val childWeightsSummed = childWeights.sum
+
+      weights(name) + childWeightsSummed
+    }
+
+graph("vgzejbd").map(getWeight2)
+List((hvpess,1924,2090), (nuozixg,1064,2090), (tshyvej,1373,2090), (yfxbu,32,2090), (kiatxq,1232,2096))
+res79: Seq[Int] = List(159240, 159246, 159240, 159240, 159240, 159240)
+@ 1232 - 6
+res80: Int = 1226
+
+

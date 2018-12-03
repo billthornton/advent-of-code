@@ -1,0 +1,63 @@
+
+
+val instructions = input.map(_.splitAt(1)).map { case (m, i) => m -> i.toInt }
+
+val directions = Seq("N", "E", "S", "W")
+def getDirection(turn: String, current: String) = {
+    val index = directions.indexOf(current)
+
+    turn match {
+      case "L" => if (index == 0) directions(directions.length-1) else directions(index-1)
+      case "R" => if (index+1 == directions.length) directions(0) else directions(index+1)
+    }
+  }
+
+def move(dir: String, amount: Int, coord: Coord) = {
+      val (x, y) = coord
+      dir match {
+        case "N" => (x, y+amount)
+        case "E" => (x+amount, y)
+        case "S" => (x, y-amount)
+        case "W" => (x-amount, y)
+    }
+    }
+
+
+val finalPos = instructions.scanLeft((0,0), "N") { case ((coord, currentDir), (turn, steps)) =>
+    val newDirection = getDirection(turn, currentDir)
+    val newPos = move(newDirection, steps, coord)
+
+    (newPos -> newDirection)
+  }
+
+def findIt(remain: Seq[(Int, Int)], seen: Seq[(Int, Int)]): (Int, Int) = {
+    val (check, nextRemain) = remain.splitAt(1)
+    if (seen.contains(check)) check else findIt(nextRemain, seen ++ Seq(check))
+  }
+
+val x = findIt(fin, Nil)
+x._1 + x._2
+
+
+
+def movements(dir: String, amount: Int, coord: Coord) = {
+        val (x, y) = coord
+        dir match {
+          case "N" => (1 to amount).map(a => (x, y+a))
+          case "E" => (1 to amount).map(a => (x+a, y))
+          case "S" => (1 to amount).map(a => (x, y-a))
+          case "W" => (1 to amount).map(a => (x-a, y))
+      }
+      }
+
+val finalPos = instructions.foldLeft((0,0), "N", Seq.empty[Coord]) { case ((coord, currentDir, oldMovements), (turn, steps)) =>
+      val newDirection = getDirection(turn, currentDir)
+      val newMovements = movements(newDirection, steps, coord)
+      val newPos = newMovements.last
+
+      (newPos, newDirection, oldMovements ++ newMovements)
+    }
+val f = finalPos._3
+findIt(f, Nil)
+
+

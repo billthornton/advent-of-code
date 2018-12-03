@@ -1,0 +1,44 @@
+
+
+val input = scala.io.Source.fromFile("day6.txt").getLines.toSeq.head.trim.split("""\s+""").map(_.toInt).toSeq
+
+def reallocate(banks: Seq[Int], history: Set[Seq[Int]], redistributions: Int): Int = {
+  val bankSize = banks.size
+  val max = banks.max
+  val index = banks.indexOf(max)
+  val withoutMax = banks.updated(index, 0)
+  var seq = mutable.Buffer(withoutMax: _*)
+
+  //println(s"index:$index max:$max seq:$seq")
+
+  (index until max+index).foreach { i =>
+    val index = (i + 1) % bankSize
+    seq(index) = seq(index) + 1
+  }
+  val newBanks = seq.toSeq
+  if (history.contains(newBanks)) redistributions + 1 else reallocate(newBanks, history ++ Seq(newBanks), redistributions + 1)
+  }
+
+
+
+def reallocate(banks: Seq[Int], history: Set[Seq[Int]], foundState: Option[Seq[Int]], redistributions: Int): Int = {
+  val bankSize = banks.size
+  val max = banks.max
+  val index = banks.indexOf(max)
+  val withoutMax = banks.updated(index, 0)
+  var seq = mutable.Buffer(withoutMax: _*)
+
+  (index until max+index).foreach { i =>
+    val index = (i + 1) % bankSize
+    seq(index) = seq(index) + 1
+  }
+  val newBanks = seq.toSeq
+
+  (foundState, history.contains(newBanks)) match {
+  case (Some(state), _) if state == newBanks => redistributions + 1
+  case (Some(state), _) => reallocate(newBanks, history ++ Seq(newBanks), foundState, redistributions + 1)
+  case (None, true) => reallocate(newBanks, history ++ Seq(newBanks), Some(newBanks), 0)
+  case _ => reallocate(newBanks, history ++ Seq(newBanks), None, redistributions + 1)
+  }
+
+  }

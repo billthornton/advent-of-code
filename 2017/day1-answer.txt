@@ -1,0 +1,7 @@
+
+val input = scala.io.Source.fromFile("day1.txt").getLines.toSeq.head
+val wrappedInput = input + input.take(1)
+wrappedInput.sliding(2, 1).map(chars => (chars(0).toString.toInt -> chars(1).toString.toInt)).collect { case (a, b) if a == b => a }.sum
+s"${input}${input.take(1)}".sliding(2, 1).map(chars => (chars(0).toString.toInt -> chars(1).toString.toInt)).collect { case (a, b) if a == b => a }.sum
+input.sliding((input.length / 2) + 1, 1).map(chars => (chars.head.toString.toInt -> chars.last.toString.toInt)).collect { case (a, b) if a == b => a + b }.sum
+

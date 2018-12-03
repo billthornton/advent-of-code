@@ -1,0 +1,85 @@
+
+
+type Coords = (Int, Int)
+type Movement = Coords => Coords
+type StateChange = State => State
+type Flow = (State, Movement)
+
+case class State(coords: Coords, boundry: Int)
+
+object Movements {
+  val Left: Movement = { case (x, y) => (x-1, y) }
+  val Right: Movement = { case (x, y) => (x+1, y) }
+  val Up: Movement = { case (x, y) => (x, y+1) }
+  val Down: Movement = { case (x, y) => (x, y-1) }
+  }
+object BottomRight {
+  def unapply(state: State): Option[Movement] = state.coords match {
+    case (x, y) if x == state.boundry && y == -state.boundry => Some(Movements.Up)
+    case _ => None
+  }
+  }
+object TopRight {
+  def unapply(state: State): Option[Movement] = state.coords match {
+    case (x, y) if x == state.boundry && y == state.boundry => Some(Movements.Left)
+    case _ => None
+  }
+  }
+object TopLeft {
+  def unapply(state: State): Option[Movement] = state.coords match {
+    case (x, y) if x == -state.boundry && y == state.boundry => Some(Movements.Down)
+    case _ => None
+  }
+  }
+
+object BottomLeft {
+  def unapply(state: State): Option[Movement] = state.coords match {
+    case (x, y) if x == -state.boundry && y == -state.boundry => Some(Movements.Right)
+    case _ => None
+  }
+  }
+
+
+val grid = (1 until 361527).scanLeft((1, State((0, 0), 0), Movements.Up)) { case ((_, state, moveme  nt), index) => {
+  val (nextState, nextMovement) = state match {
+  case State((0, 0), 0) => State((1, 0), 1) -> Movements.Up
+  case TopLeft(next) => state.copy(coords = next(state.coords)) -> next
+  case TopRight(next) => state.copy(coords = next(state.coords)) -> next
+  case BottomLeft(next) => state.copy(coords = next(state.coords)) -> next
+  case BottomRight(next) => state.copy(coords = Movements.Right(state.coords), boundry = state.boundr  y + 1) -> Movements.Up
+  case _ => state.copy(coords = movement(state.coords)) -> movement
+  }
+
+  (index + 1, nextState, nextMovement)
+  }
+  }
+
+val (x, y) = grid.last._2.coords
+x + y
+
+
+
+def calcSurrounding(coords: Coords, gridMap: Map[Coords, Int]): Int = {
+  val (x, y) = coords
+  val right = gridMap.getOrElse((x+1, y), 0)
+  val topright = gridMap.getOrElse((x+1, y+1), 0)
+  val top = gridMap.getOrElse((x, y+1), 0)
+  val topleft = gridMap.getOrElse((x-1, y+1), 0)
+  val left = gridMap.getOrElse((x-1, y), 0)
+  val bottomleft = gridMap.getOrElse((x-1, y-1), 0)
+  val bottom = gridMap.getOrElse((x, y-1), 0)
+  val bottomright = gridMap.getOrElse((x+1, y-1), 0)
+
+  right + topright + top + topleft + left + bottomleft + bottom + bottomright
+  }
+
+
+val grid3 = grid.map { case (i, state, _) => state.coords }
+val grid4 = grid3.slice(1, 400).foldLeft(Seq((0, 0) -> 1)) { case (gridMap, coords) => {
+    val surroundingValue = calcSurrounding(coords, gridMap.toMap)
+
+    gridMap ++ Seq(coords -> surroundingValue)
+  }
+  }
+
+grid4.find { case (_, value) => value > 361527 }.get._2

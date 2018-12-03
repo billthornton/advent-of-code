@@ -1,0 +1,41 @@
+
+val input = scala.io.Source.fromFile("day8.txt").getLines.toSeq
+
+val registerValues: Map[String, Int] = Map().withDefaultValue(0)
+
+case class Instruction(registerName: String, op: String, adjustmentAmount: Int, comparisonRegisterName: String, comparisonOperator: String, compareAmount: Int) {
+  def isTrue(registerValues: Map[String, Int]) = {
+      val cmpValue = registerValues(comparisonRegisterName)
+
+      comparisonOperator match {
+          case ">" => cmpValue > compareAmount
+          case ">=" => cmpValue >= compareAmount
+          case "<=" => cmpValue <= compareAmount
+          case "<" => cmpValue < compareAmount
+          case "==" => cmpValue == compareAmount
+          case "!=" => cmpValue != compareAmount
+      }
+  }
+  def adjust(registerValues: Map[String, Int]) = {
+    val value = registerValues(registerName)
+
+     val newValue = op match {
+       case "inc" => value + adjustmentAmount
+       case "dec" => value - adjustmentAmount
+     }
+
+     registerValues + (registerName -> newValue)
+  }
+  }
+
+
+val instructions = input.map(_.split(" ").toSeq).map {
+   case Seq(registerName, op, adjAmount, _, comparisonRegisterName, comparisonOperator, cmpAmount) => Instruction(registerName, op, adjAmount.toInt, comparisonRegisterName, compari  sonOperator, cmpAmount.toInt)
+  }
+
+val (registers, highestSeen) = instructions.foldLeft((registerValues, 0)) { case ((values, highest), instruction) => {
+    if (instruction.isTrue(values)) (instruction.adjust(values), if (values(instruction.registerName) > highest) values(instruction.registerName) else highest) else (values, highes  t)
+  }
+  }
+
+registers.values.max

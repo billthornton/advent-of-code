@@ -1,0 +1,33 @@
+
+val input = scala.io.Source.fromFile("day5.txt").getLines.toSeq.map(_.toInt)
+
+def jump(offset: Int, seq: Seq[Int], steps: Int): Int = {
+  val current = seq(offset)
+  val newOffset = offset + current
+  val newValue = current + 1
+  val newSeq = seq.updated(offset, newValue)
+  val newSteps = steps + 1
+
+  //println(s"current: $current newOffset: $newOffset newValue: $newValue")
+  //println(seq)
+
+  if (newOffset < 0 || newOffset > (newSeq.length-1)) newSteps else jump(newOffset, newSeq, newSteps)
+  }
+
+jump(0, input, 0)
+
+val mutableInput = mutable.Buffer(input :_*)
+def jump3(offset: Int, seq: mutable.Buffer[Int], steps: Int): Int = {
+    val current = seq(offset)
+    val newOffset = offset + current
+    val newValue = if (current >= 3) current - 1 else current + 1
+    seq(offset) = newValue
+    val newSteps = steps + 1
+
+    //println(s"current: $current newOffset: $newOffset newValue: $newValue")
+    //println(seq)
+
+    if (newOffset < 0 || newOffset > (seq.length-1)) newSteps else jump3(newOffset, seq, newSteps)
+    }
+jump3(0, mutableInput, 0)
+

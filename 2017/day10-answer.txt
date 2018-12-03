@@ -1,0 +1,60 @@
+
+
+
+
+Seq(183,0,31,146,254,240,223,150,2,206,161,1,255,232,199,88).foldLeft(((0 until 256).toList, 0, 0)) { case ((list, pos, skip), length) => {
+    val endPos1 = (pos + length - 1) % list.length
+
+    println("-------")
+    println(s"length:$length pos:$pos skipSize:$skip endPos1:$endPos1")
+
+    printStatus(list, pos, endPos1)
+    val rightSeq = list.slice(pos, pos+length)
+    val leftSeq = list.slice(0, length-rightSeq.size)
+    val (newRightSeq, newLeftSeq) = (rightSeq ++ leftSeq).reverse.splitAt(rightSeq.size)
+    val newSeq = list.patch(0, newLeftSeq, newLeftSeq.size).patch(pos, newRightSeq, newRightSeq.size)
+    val endPos = if (rightSeq.size == length) (pos + length -1) else leftSeq.size - 1
+    val upPos = pos % list.length
+    printStatus(list, upPos, endPos)
+    println(s"pos:$pos newPos:$upPos endPos:$endPos newSeq:$newSeq leftSeq:$leftSeq rightSeq:$rightSeq")
+    printStatus(newSeq, upPos, endPos)
+    val newPos = (pos + skip + length) % list.length
+    val newEndPos = (pos + endPos) % list.length
+    printStatus(newSeq, newPos, endPos)
+    (newSeq, newPos, skip+1)
+  }
+  }
+
+
+def run(inList: Seq[Int], inPos: Int, inSkip: Int): (Seq[Int], Int, Int) = {
+   Seq(183,0,31,146,254,240,223,150,2,206,161,1,255,232,199,88).foldLeft((inList, inPos, inSkip)) { case ((list, pos, skip), length) => {
+    val endPos1 = (pos + length - 1) % list.length
+
+  //  println("-------")
+    //println(s"length:$length pos:$pos skipSize:$skip endPos1:$endPos1")
+
+    //printStatus(list, pos, endPos1)
+    val rightSeq = list.slice(pos, pos+length)
+    val leftSeq = list.slice(0, length-rightSeq.size)
+    val (newRightSeq, newLeftSeq) = (rightSeq ++ leftSeq).reverse.splitAt(rightSeq.size)
+    val newSeq = list.patch(0, newLeftSeq, newLeftSeq.size).patch(pos, newRightSeq, newRightSeq.size)
+    val endPos = if (rightSeq.size == length) (pos + length -1) else leftSeq.size - 1
+    val upPos = pos % list.length
+    //printStatus(list, upPos, endPos)
+    //println(s"pos:$pos newPos:$upPos endPos:$endPos newSeq:$newSeq leftSeq:$leftSeq rightSeq:$rightSeq")
+  //  printStatus(newSeq, upPos, endPos)
+    val newPos = (pos + skip + length) % list.length
+    val newEndPos = (pos + endPos) % list.length
+  //  printStatus(newSeq, newPos, endPos)
+    (newSeq, newPos, skip+1)
+  }
+  }
+  }
+
+val allRuns = (0 until 64).toList.foldLeft(((0 until 256).toList, 0, 0)) { case ((list, pos, skip), _) => {
+    val (x, y, z) = run(list, pos, skip)
+    (x.toList, y, z)
+  }
+  }
+
+
