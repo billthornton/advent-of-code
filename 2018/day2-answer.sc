@@ -5,9 +5,9 @@ val input = scala.io.Source.fromFile("day2-input.txt").getLines.toSeq
 // Part 1
 def hasRepetitions(repeatCount: Int)(line: String): Boolean = line
   .split("")
-  .groupBy(a => a)
-  .collectFirst { case (key, values) if values.size == repeatCount => 
-    true
+  .groupBy(identity)
+  .collectFirst {
+    case (key, values) if values.size == repeatCount => true
   }.isDefined
 
 val doubleCount = input.filter(hasRepetitions(2)).size
