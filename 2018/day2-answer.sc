@@ -7,8 +7,7 @@ def hasRepetitions(repeatCount: Int)(line: String): Boolean = line
   .split("")
   .groupBy(identity)
   .exists {
-    case (key, values) if values.size == repeatCount => true
-    case _ => false
+    case (key, values) => values.size == repeatCount
   }
 
 val doubleCount = input.filter(hasRepetitions(2)).size
