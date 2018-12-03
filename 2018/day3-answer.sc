@@ -7,8 +7,8 @@ val extractor = "#(\\d+) @ (\\d+),(\\d+): (\\d+)x(\\d+)".r
 val claims = input.collect { case extractor(id, x, y, width, height) => Claim(id.toInt, x.toInt, y.toInt, width.toInt, height.toInt) }
 
 // Part 1
-
 val observedCoords = scala.collection.mutable.HashMap[String, Int]().withDefaultValue(0)
+
 claims.foreach { claim =>
   for {
     x <- claim.x until claim.x + claim.width
@@ -18,6 +18,7 @@ claims.foreach { claim =>
 }
 val squareInches = observedCoords.values.filter(_ > 1).size
 
+// Part 2
 val uniqClaimId = claims.find { claim =>
   val coordCounts = for {
     x <- claim.x until claim.x + claim.width
