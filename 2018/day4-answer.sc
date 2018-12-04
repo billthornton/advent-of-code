@@ -4,20 +4,25 @@ val input = scala.io.Source.fromFile("day4-input.txt").getLines.toSeq
 
 val GuardExtractor = ".* Guard #(\\d+) begins shift".r
 
+val emptyGuardLogs = Map[Int, Seq[String]]().withDefaultValue(Nil)
+val noGuardId = Option.empty[Int]
+
 val (shifts: Map[Int, Seq[String]], _) = input
   .sorted
-  .foldLeft((Map[Int, Seq[String]]().withDefaultValue(Nil), Option.empty[Int])) {
-    case ((map, currentGuardId), GuardExtractor(guardId)) => {
-      (map, Some(guardId.toInt))
+  .foldLeft((emptyGuardLogs, noGuardId)) {
+    case ((shiftMap, _), GuardExtractor(guardId)) =>
+      shiftMap -> Some(guardId.toInt)
+    case ((shiftMap, Some(currentGuardId)), line) => {
+      val updatedShiftMap = shiftMap.updated(currentGuardId, shiftMap(currentGuardId) :+ line)
+
+      updatedShiftMap -> Some(currentGuardId)
     }
-    case ((map, Some(currentGuardId)), line) =>
-      (map.updated(currentGuardId, map(currentGuardId) :+ line), Some(currentGuardId))
 }
 
-val TimeParse = ".* 00:(\\d+)\\].*".r
+val MinuteExtractor = ".* 00:(\\d+)\\].*".r
 
-def getTime(logLine: String) = logLine match {
-  case TimeParse(minutes) => minutes.toInt
+def parseMinute(logLine: String) = logLine match {
+  case MinuteExtractor(minutes) => minutes.toInt
 }
 
 val shiftSleeps = shifts
@@ -28,7 +33,7 @@ val shiftSleeps = shifts
   .map {
     case (guardId, logPairs) => {
       val sleepRanges = logPairs.map {
-        case Seq(asleepLog, wakeLog) => getTime(asleepLog) until getTime(wakeLog)
+        case Seq(asleepLog, wakeLog) => parseMinute(asleepLog) until parseMinute(wakeLog)
       }
       guardId -> sleepRanges
     }
