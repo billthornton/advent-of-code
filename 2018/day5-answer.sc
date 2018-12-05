@@ -3,15 +3,15 @@
 val input = scala.io.Source.fromFile("day5-input.txt").getLines.toSeq.head
 
 def polymerReduce(in: String): String = { 
-  in.scan("") { 
-    case (a, b) => {
-      val aa = a.toString
-      val lastA = if (aa.nonEmpty) aa.last.toString else ""
-      val bb = b.toString
-      
-      if (lastA != bb && lastA.toLowerCase == bb.toLowerCase) aa.take(aa.size - 1) else s"$aa$bb"
+  in
+    .split("")
+    .map(_.toString)
+    .reduce {
+      (acc, candidate) => {
+        val lastCandidate = if (acc.nonEmpty) acc.last.toString else ""
+        if (lastCandidate != candidate && lastCandidate.toLowerCase == candidate.toLowerCase) acc.take(acc.size - 1) else s"$acc$candidate"
+      }
     }
-  }.last.toString
 }
 
 val result1 = polymerReduce(input).size
