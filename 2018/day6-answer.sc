@@ -39,8 +39,23 @@ val answer1 = grid
   .head
   ._2
 
+
+
+val distanceCountGrid = scala.collection.mutable.HashMap[(Int, Int), Int]().withDefaultValue(0)
+
+for {
+    ((coordX, coordY), name) <- coords.zipWithIndex
+    x <- minX until maxX
+    y <- minY until maxY
+    distance = Math.abs(x - coordX) + Math.abs(y - coordY)
+    existingDistance = distanceCountGrid(x, y)
+} distanceCountGrid.update((x, y), distance + existingDistance)
+
+
+val regionSize = distanceCountGrid.values.filter(_ < 10000).size
+
 println("Day 6")
 println("======")
 println(s"Part 1: ${answer1}")
-println(s"Part 2: ")
+println(s"Part 2: ${regionSize}")
 

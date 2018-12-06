@@ -4,7 +4,7 @@ val input = scala.io.Source.fromFile("day5-input.txt").getLines.toSeq.head
 
 def polymerReduce(in: String): String = { 
   in
-    .split("")
+    .toSeq
     .map(_.toString)
     .reduce {
       (acc, candidate) => {
